@@ -1,53 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <!-- Includes a description of the webpage. -->
-        <meta name="description" content="Horiseon offers social solution services">
-        <!-- Includes keywords for search engine optimization. -->
-        <meta name="keywords" content="search engine optimization, online reputation managements, social media marketing, lead generation, brand awareness, cost management">
-        <!-- Includes the author of the page. -->
-        <meta name="author" content="Horiseon Social Services, Inc.">
-        <!-- Includes viewport to make the website look good on all devices. -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Changed <title> from "website" to "Horiseon - Social Solution Services" for easier tab management for users. -->
-        <title>Document Title</title>
-        <!-- Added "type='text/css'" to specify the media type of the linked document/resource (if omitted, the browser will look at the rel attribute to guess the correct type e.g., if "rel='stylesheet'", assumption is "text/css"). -->
-        <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
-        <link rel="stylesheet" type="text/css" href="./assets/css/reset.css">
-    </head>
 
-    <body>
-        <header>
-            <h1>Hello World</h1>
-        </header>
-    
-        <main>
-            <div class="wrapper">
-    
-            <header>
-                <h1>Password Generator</h1>
-            </header>
-    
-            <div class="card">
-                <div class="card-header">
-                <h2>To generate a password, click "Generate"<br><br>To use the same prior password criteria, click "Re-roll"</h2>
-                </div>
-                <div class="card-body">
-                <textarea
-                    readonly
-                    id="password"
-                    placeholder="Your Secure Password"
-                    aria-label="Generated Password"
-                ></textarea>
-                </div>
-                <div class="card-footer">
-                <button id="generate" class="btn">Generate</button>
-                <button id="reroll" class="btn">Re-roll</button>
-                </div>
-            </div>
-            </div>
-            <script src="./assets/js/script.js"></script>
-        </main>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SunnySideUp - Weather Application</title>
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/reset.css">
+</head>
+
+<body>
+    <header>
+        <h1>SunnySideUp</h1>
+        <p>Your bright forecast friend</p>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2 class="card-header text-uppercase">Search By City</h2>
+            <form id="city-form" class="card-body">
+                <label class="city-label" for="city">City</label>
+                <input name="city" id="city-input" type="text" autofocus="true" class="form-input" />
+                <button type="submit" class="btn">Get Forecast</button>
+            </form>
+        </div>
+
+        <div class="col-12 col-md-8">
+            <h2 class="subtitle">Showing Forecast For: <span id="city-search-term"></span></h2>
+            <div id="forecast-container" class="list-group"></div>
+        </div>
+
+        <script src="./assets/js/script.js"></script>
+    </main>
+</body>
+
 </html>
