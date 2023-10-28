@@ -1,21 +1,29 @@
+var apiKey = '71dbaa7d3be04107c31af3e354e26446';
+
 var cityFormEl = document.querySelector('#city-form');
 var cityInputEl = document.querySelector('#city-input');
-var cityNameEl = document.querySelector('#city-name');
-var currentDateEl = document.querySelector('#current-date');
-var listCurrentGroupEl = document.querySelector('#list-current-group');
-var listForecastGroupEl = document.querySelector('#list-forecast-group');
+
+var showingWeatherInEl = document.querySelector('.showing-weather-in');
+
+var currentContainerEl = document.querySelector('.current-container');
+var currentEl = document.querySelector('.current');
+var currentDateEl = document.querySelector('.current-date');
+var currentTimeEl = document.querySelector('.current-time');
+var listCurrentGroupEl = document.querySelector('.list-current-group');
+
+var forecastContainerEl = document.querySelector('.forecast-container');
+var forecastEl = document.querySelector('.forecast');
+var listForecastGroupEl = document.querySelector('.list-forecast-group');
+
 
 var formSubmitHandler = function (event) {
     event.preventDefault();
 
     var city = cityInputEl.value.trim();
-    cityNameEl.textContent = city;
 
     if (city) {
         getCoordinates(city);
 
-        listCurrentGroupEl.textContent = '';
-        listForecastGroupEl.textContent = '';
         cityInputEl.value = '';
 
     } else {
@@ -26,16 +34,26 @@ var formSubmitHandler = function (event) {
 
 
 var getCoordinates = function (city) {
-    var geocodeUrl = 'http://api.openweathermap.org/geo/1.0/direct?q=' + city + '&appid=71dbaa7d3be04107c31af3e354e26446';
+    var geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apiKey}`;
 
     fetch(geocodeUrl)
         .then(function (response) {
             if (response.ok) {
-                response.json()
-                    .then(function (coords) {
-                        console.log(coords);
-                        var lat = coords[0].lat;
-                        var lon = coords[0].lon;
+                return response.json()
+                    .then(function (data) {
+
+                        var city = data[0].name;
+                        var state = data[0].state;
+
+                        var location = `${city}, ${state}`;
+
+                        var locationInputEl = document.querySelector('h2')
+                        locationInputEl.textContent = location;
+                        showingWeatherInEl.appendChild(locationInputEl);
+
+                        var lat = data[0].lat;
+                        var lon = data[0].lon;
+
                         getCurrentWeather(lat, lon);
                     });
             }
@@ -45,12 +63,12 @@ var getCoordinates = function (city) {
 
 
 var getCurrentWeather = function (lat, lon) {
-    var currentUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lon + '&appid=71dbaa7d3be04107c31af3e354e26446';
+    var currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
 
     fetch(currentUrl)
         .then(function (response) {
             if (response.ok) {
-                response.json()
+                return response.json()
                     .then(function (currentData) {
 
                         console.log(currentData);
@@ -60,10 +78,38 @@ var getCurrentWeather = function (lat, lon) {
                             return;
                         }
 
-                        // Current date (MM/DD/YYYY).
-                        var formatCurrentDate = new Date(currentData.dt * 1000);
-                        var standardCurrentDate = formatCurrentDate.toLocaleString();
-                        currentDateEl.textContent = standardCurrentDate;
+                        currentEl.textContent = 'Currently:';
+
+                        // Current date (MM/DD/YYYY) and time ().
+                        updateTime();
+                        setInterval(updateTime, 1000);
+
+                        function updateTime() {
+
+                            var now = new Date();
+
+                            // Format date (w/ time).
+                            var dateOptions = {
+                                weekday: 'short',
+                                month: 'short',
+                                day: '2-digit',
+                                year: 'numeric',
+                            };
+
+                            var timeOptions = {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: true,
+                            };
+
+                            var currentTime = now.toLocaleString('en-US', timeOptions);
+                            var currentDate = now.toLocaleString('en-US', dateOptions);
+
+                            currentTimeEl.textContent = 'Local Time: ' + currentTime;
+                            currentDateEl.textContent = currentDate;
+
+                        };
 
                         // Current weather conditions/icons.
                         var currentWeatherConditions = currentData.weather[0];
@@ -71,7 +117,7 @@ var getCurrentWeather = function (lat, lon) {
 
                         var currentWeatherIcon = currentWeatherConditions.icon;
                         var iconUrl = 'http://openweathermap.org/img/w/' + currentWeatherIcon + '.png';
-                        
+
                         var currentIconImg = document.createElement('img');
                         currentIconImg.src = iconUrl;
                         listCurrentGroupEl.appendChild(currentIconImg);
@@ -87,15 +133,16 @@ var getCurrentWeather = function (lat, lon) {
                         console.log(currentTempCelsius);
 
                         var currentTempEl = document.createElement('div');
-                        currentTempEl.textContent = currentTempFahrenheit + '°F / ' + currentTempCelsius + '°C';
+                        currentTempEl.textContent = 'Temp:  ' + currentTempFahrenheit.toFixed(1) + '°F / ' + currentTempCelsius.toFixed(1) + '°C';
                         listCurrentGroupEl.appendChild(currentTempEl);
 
-                        // Current wind speed (m/s).
-                        var currentWind = currentData.wind.speed;
-                        console.log(currentWind);
+                        // Current wind speed (m/s -> mph).
+                        var currentWindMs = currentData.wind.speed;
+                        var currentWindMph = currentWindMs * 2.237;
+                        console.log(currentWindMph);
 
                         var currentWindEl = document.createElement('div');
-                        currentWindEl.textContent = currentWind + ' m/s';
+                        currentWindEl.textContent = 'Wind:  ' + currentWindMph.toFixed(2) + ' m/s';
                         listCurrentGroupEl.appendChild(currentWindEl);
 
                         // Current humidity (%).
@@ -103,7 +150,7 @@ var getCurrentWeather = function (lat, lon) {
                         console.log(currentHumidity);
 
                         var currentHumidityEl = document.createElement('div');
-                        currentHumidityEl.textContent = currentHumidity + '%';
+                        currentHumidityEl.textContent = 'Humidity:  ' + currentHumidity.toFixed(0) + '%';
                         listCurrentGroupEl.appendChild(currentHumidityEl);
 
                         getForecast(lat, lon);
@@ -114,12 +161,12 @@ var getCurrentWeather = function (lat, lon) {
 
 
 var getForecast = function (lat, lon) {
-    var forecastUrl = 'http://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=71dbaa7d3be04107c31af3e354e26446';
+    var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
     fetch(forecastUrl)
         .then(function (response) {
             if (response.ok) {
-                response.json()
+                return response.json()
                     .then(function (forecastData) {
 
                         console.log(forecastData)
@@ -129,14 +176,24 @@ var getForecast = function (lat, lon) {
                             return;
                         }
 
+                        forecastEl.textContent = '5-Day Forecast:';
+
                         for (var i = 0; i < forecastData.list.length; i += 8) {
 
                             var dayForecast = forecastData.list[i];
 
                             // Forecast date (MM/DD/YYYY).
                             var formatDayForecast = new Date(dayForecast.dt * 1000);
-                            var standardDayForecast = formatDayForecast.toLocaleString();
-                            console.log(standardDayForecast);
+
+                            // Format date.
+                            var options = {
+                                weekday: 'short',
+                                month: 'short',
+                                day: '2-digit',
+                                year: 'numeric',
+                            };
+
+                            var standardDayForecast = formatDayForecast.toLocaleString('en-US', options);
 
                             var standardDayForecastEl = document.createElement('div');
                             standardDayForecastEl.textContent = standardDayForecast;
@@ -164,15 +221,16 @@ var getForecast = function (lat, lon) {
                             console.log(forecastTempCelsius);
 
                             var forecastTempEl = document.createElement('div');
-                            forecastTempEl.textContent = forecastTempFahrenheit + '°F / ' + forecastTempCelsius + '°C';
+                            forecastTempEl.textContent = 'Temp:  ' + forecastTempFahrenheit.toFixed(1) + '°F / ' + forecastTempCelsius.toFixed(1) + '°C';
                             listForecastGroupEl.appendChild(forecastTempEl);
 
-                            // Forecast wind speed (m/s). 
-                            var forecastWindSpeed = dayForecast.wind.speed;
-                            console.log(forecastWindSpeed);
+                            // Forecast wind speed (m/s -> mph). 
+                            var forecastWindMs = dayForecast.wind.speed;
+                            var forecastWindMph = forecastWindMs * 2.237;
+                            console.log(forecastWindMph);
 
                             var forecastWindSpeedEl = document.createElement('div');
-                            forecastWindSpeedEl.textContent = forecastWindSpeed + 'm/s';
+                            forecastWindSpeedEl.textContent = 'Wind:  ' + forecastWindMph.toFixed(2) + ' mph';
                             listForecastGroupEl.appendChild(forecastWindSpeedEl);
 
                             // Forecast humidity (%).
@@ -180,7 +238,7 @@ var getForecast = function (lat, lon) {
                             console.log(forecastHumidity);
 
                             var forecastHumidityEl = document.createElement('div');
-                            forecastHumidityEl.textContent = forecastHumidity + '%';
+                            forecastHumidityEl.textContent = 'Humidity:  ' + forecastHumidity.toFixed(0) + '%';
                             listForecastGroupEl.appendChild(forecastHumidityEl);
                         }
                     });
