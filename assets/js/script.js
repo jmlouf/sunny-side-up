@@ -1,18 +1,21 @@
 var cityFormEl = document.querySelector('#city-form');
 var cityInputEl = document.querySelector('#city-input');
-var forecastContainerEl = document.querySelector('#forecast-container');
-var citySearchTermEl = document.querySelector('#city-search-term');
-
+var cityNameEl = document.querySelector('#city-name');
+var currentDateEl = document.querySelector('#current-date');
+var listCurrentGroupEl = document.querySelector('#list-current-group');
+var listForecastGroupEl = document.querySelector('#list-forecast-group');
 
 var formSubmitHandler = function (event) {
     event.preventDefault();
 
     var city = cityInputEl.value.trim();
+    cityNameEl.textContent = city;
 
     if (city) {
         getCoordinates(city);
 
-        forecastContainerEl.textContent = '';
+        listCurrentGroupEl.textContent = '';
+        listForecastGroupEl.textContent = '';
         cityInputEl.value = '';
 
     } else {
@@ -33,11 +36,80 @@ var getCoordinates = function (city) {
                         console.log(coords);
                         var lat = coords[0].lat;
                         var lon = coords[0].lon;
-                        getForecast(lat, lon);
+                        getCurrentWeather(lat, lon);
                     });
             }
         });
 
+};
+
+
+var getCurrentWeather = function (lat, lon) {
+    var currentUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lon + '&appid=71dbaa7d3be04107c31af3e354e26446';
+
+    fetch(currentUrl)
+        .then(function (response) {
+            if (response.ok) {
+                response.json()
+                    .then(function (currentData) {
+
+                        console.log(currentData);
+
+                        if (currentData.length === 0) {
+                            listCurrentGroupEl.textContent = 'No results found';
+                            return;
+                        }
+
+                        // Current date (MM/DD/YYYY).
+                        var formatCurrentDate = new Date(currentData.dt * 1000);
+                        var standardCurrentDate = formatCurrentDate.toLocaleString();
+                        currentDateEl.textContent = standardCurrentDate;
+
+                        // Current weather conditions/icons.
+                        var currentWeatherConditions = currentData.weather[0];
+                        console.log(currentWeatherConditions);
+
+                        var currentWeatherIcon = currentWeatherConditions.icon;
+                        var iconUrl = 'http://openweathermap.org/img/w/' + currentWeatherIcon + '.png';
+                        
+                        var currentIconImg = document.createElement('img');
+                        currentIconImg.src = iconUrl;
+                        listCurrentGroupEl.appendChild(currentIconImg);
+
+                        // Current temperature (Fahrenheit / Celsius).
+                        var currentTempKelvin = currentData.main.temp;
+                        console.log(currentTempKelvin);
+
+                        var currentTempFahrenheit = 1.8 * (currentTempKelvin - 273.15) + 32;
+                        console.log(currentTempFahrenheit);
+
+                        var currentTempCelsius = currentTempKelvin - 273.15;
+                        console.log(currentTempCelsius);
+
+                        var currentTempEl = document.createElement('div');
+                        currentTempEl.textContent = currentTempFahrenheit + '°F / ' + currentTempCelsius + '°C';
+                        listCurrentGroupEl.appendChild(currentTempEl);
+
+                        // Current wind speed (m/s).
+                        var currentWind = currentData.wind.speed;
+                        console.log(currentWind);
+
+                        var currentWindEl = document.createElement('div');
+                        currentWindEl.textContent = currentWind + ' m/s';
+                        listCurrentGroupEl.appendChild(currentWindEl);
+
+                        // Current humidity (%).
+                        var currentHumidity = currentData.main.humidity;
+                        console.log(currentHumidity);
+
+                        var currentHumidityEl = document.createElement('div');
+                        currentHumidityEl.textContent = currentHumidity + '%';
+                        listCurrentGroupEl.appendChild(currentHumidityEl);
+
+                        getForecast(lat, lon);
+                    });
+            }
+        });
 };
 
 
@@ -48,89 +120,74 @@ var getForecast = function (lat, lon) {
         .then(function (response) {
             if (response.ok) {
                 response.json()
-                    .then(function (data) {
-                        console.log(data);
+                    .then(function (forecastData) {
 
-                        // City name.
-                        var name = data.city.name;
+                        console.log(forecastData)
 
-                        console.log(name);
+                        if (forecastData.length === 0) {
+                            forecastContainerEl.textContent = '';
+                            return;
+                        }
 
-                        // Date.
-                        var dateFormat = data.list[0].dt_txt;
-                        var date = new Date(dateFormat);
+                        for (var i = 0; i < forecastData.list.length; i += 8) {
 
-                        console.log(date);
+                            var dayForecast = forecastData.list[i];
 
-                        // Weather conditions.
-                        var weatherConditions = data.list[0].weather[0];
+                            // Forecast date (MM/DD/YYYY).
+                            var formatDayForecast = new Date(dayForecast.dt * 1000);
+                            var standardDayForecast = formatDayForecast.toLocaleString();
+                            console.log(standardDayForecast);
 
-                        console.log(weatherConditions);
+                            var standardDayForecastEl = document.createElement('div');
+                            standardDayForecastEl.textContent = standardDayForecast;
+                            listForecastGroupEl.appendChild(standardDayForecastEl);
 
-                        // Temperature (Kelvin).
-                        var tempKelvin = data.list[0].main.temp;
-                        // Temperature (Fahrenheit).
-                        var tempFahrenheit = (tempKelvin - 273.15) * 9/5 + 32;
-                        // Temperature (Celsius).
-                        var tempCelsius = tempKelvin - 273.15;
+                            // Forecast weather conditions/icons.
+                            var forecastWeatherConditions = dayForecast.weather[0];
+                            console.log(forecastWeatherConditions);
 
-                        console.log(tempKelvin);
-                        console.log(tempFahrenheit);
-                        console.log(tempCelsius);
+                            var forecastWeatherIcon = forecastWeatherConditions.icon;
+                            var forecastIconUrl = 'http://openweathermap.org/img/w/' + forecastWeatherIcon + '.png';
 
-                        // Humidity.
-                        var humidity = data.list[0].main.humidity;
+                            var forecastIconImg = document.createElement('img');
+                            forecastIconImg.src = forecastIconUrl;
+                            listForecastGroupEl.appendChild(forecastIconImg);
 
-                        console.log(humidity);
+                            // Forecast temperature (Fahrenheit / Celsius).
+                            var forecastTempKelvin = dayForecast.main.temp;
+                            console.log(forecastTempKelvin);
 
-                        // Wind speed. 
-                        var windSpeed = data.list[0].wind.speed;
+                            var forecastTempFahrenheit = 1.8 * (forecastTempKelvin - 273.15) + 32;
+                            console.log(forecastTempFahrenheit);
 
-                        console.log(windSpeed);
+                            var forecastTempCelsius = forecastTempKelvin - 273.15;
+                            console.log(forecastTempCelsius);
 
+                            var forecastTempEl = document.createElement('div');
+                            forecastTempEl.textContent = forecastTempFahrenheit + '°F / ' + forecastTempCelsius + '°C';
+                            listForecastGroupEl.appendChild(forecastTempEl);
 
-                        displayForecast();
+                            // Forecast wind speed (m/s). 
+                            var forecastWindSpeed = dayForecast.wind.speed;
+                            console.log(forecastWindSpeed);
+
+                            var forecastWindSpeedEl = document.createElement('div');
+                            forecastWindSpeedEl.textContent = forecastWindSpeed + 'm/s';
+                            listForecastGroupEl.appendChild(forecastWindSpeedEl);
+
+                            // Forecast humidity (%).
+                            var forecastHumidity = dayForecast.main.humidity;
+                            console.log(forecastHumidity);
+
+                            var forecastHumidityEl = document.createElement('div');
+                            forecastHumidityEl.textContent = forecastHumidity + '%';
+                            listForecastGroupEl.appendChild(forecastHumidityEl);
+                        }
                     });
             }
         });
 
 };
 
-
-var displayWeather = function (repos, searchTerm) {
-    if (repos.length === 0) {
-      forecastContainerEl.textContent = 'No results found';
-      return;
-    }
-  
-    repoSearchTerm.textContent = searchTerm;
-  
-    for (var i = 0; i < repos.length; i++) {
-      var repoName = repos[i].owner.login + '/' + repos[i].name;
-  
-      var repoEl = document.createElement('a');
-      repoEl.classList = 'list-item flex-row justify-space-between align-center';
-      repoEl.setAttribute('href', './single-repo.html?repo=' + repoName);
-  
-      var titleEl = document.createElement('span');
-      titleEl.textContent = repoName;
-  
-      repoEl.appendChild(titleEl);
-  
-      var statusEl = document.createElement('span');
-      statusEl.classList = 'flex-row align-center';
-  
-      if (repos[i].open_issues_count > 0) {
-        statusEl.innerHTML =
-          "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + ' issue(s)';
-      } else {
-        statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
-      }
-  
-      repoEl.appendChild(statusEl);
-  
-      repoContainerEl.appendChild(repoEl);
-    }
-  };
 
 cityFormEl.addEventListener('submit', formSubmitHandler);
