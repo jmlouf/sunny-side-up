@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
-    <title>SunnySideUp | Weather Application</title>
-    <link rel="stylesheet" type="text/css" href="./assets/css/style-main.css">
+    <title>SunnySideUp | Forecast</title>
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
 </head>
 
 <body>
     <main class="container">
         <div class="search">
             <h1>SunnySideUp</h1>
-            <h2>Your bright forecast friend</h2>
-            <h3>Local Time: <span id="local-time"></span></h3><br><br>
-            <p>Search for a City</p>
+            <p>Your bright forecast friend</p><br>
+            <p>Local Time: <span id="local-time"></span></p><br><br>
+            <p class="card-header text-uppercase">Search for a City</p><br>
             <form id="search-form" class="card-body">
                 <label class="city-label" for="city">City: </label>
                 <input name="city" id="search-input" type="text" autofocus="true" class="form-input" /><br><br>
@@ -27,9 +27,34 @@
                     <option value="imperial">Imperial (Fahrenheit, mph)</option>
                 </select><br><br>
                 <button type="submit" class="btn">Get Forecast</button><br><br>
+                <button>
+                    <a href="./index.html" class="btn">&larr; Go Back</a>
+                </button><br><br>                
             </form>
 
-            <script src="./assets/js/script.js"></script>
+            <div id="search-history"></div>
+        </div>
+
+        <div class="result hidden">
+            <h2 id="show-results"></h2><br>
+            <div id="result-content"></div>
+        </div>
+
+        <div class="weather hidden">
+
+            <div class="city-name-state"></div>
+
+            <div class="current-forecast-container">
+                <div class="current-forecast"></div>
+            </div><br>
+
+            <div class="five-day-forecast-container">
+                <div class="five-day-forecast"></div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="./assets/js/display-search.js"></script>
     </main>
 </body>
 

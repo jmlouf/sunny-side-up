@@ -1,50 +1,36 @@
-# Project Name
+# SunnySideUp
 
 ## Description
 
-[Write me a brief description section and usage section for the following code:
+This code is for a weather forecast web application that allows users to search for a city and view the current weather conditions as well as a 5-day forecast.
 
-<insert code>]
+Key functions:
 
-This code generates a random password based on user input for length and character types.
+- searchApi makes a call to the OpenWeatherMap API to get location data for the user's search query
+- printResults displays the search results and adds a click handler to get weather data and save search history
+- getCurrentWeather and getForecast make API calls to get weather data and display it on the page
+- saveButtonToHistory clones the search button and saves to local storage
+- Event listeners on the search form submit to call the searchApi
+- searchForm contains the city search input and units dropdown
+- resultContainer displays the search results
+- weatherContainer displays the current and 5-day forecast
+- searchHistory shows previously searched cities
 
-It first defines some global variables to reference the HTML elements for the "Generate" and rer"Re-roll" buttons, as well as variables to store the password length and character types.
-
-The getLength() function prompts the user for the password length and validates it is between 8 and 128 characters. The getCharTypes() function prompts the user to select character types for the password and validates at least one is chosen.
-
-The generatePassword() function contains the logic to randomly generate a password string using the global length and types variables. It defines character pools for each type, gets a random character from the appropriate pool based on the selected types, and concatenates them to build the password.
-
-The writePassword() function calls the prompt functions, generates the password, and updates the #password element with the generated password.
-
-The rewritePassword() function regenerates a new password using the same password criteria, length and character types, without reprompting the user. It is called when the "Re-roll" button is clicked.
-
-Event listeners are added to call the functions when the buttons are clicked.
-
-Hopefully, this code will be put to good use with all the useless accounts that I have...
+The code gets location coordinates from the user's city search, uses that to call the weather API, displays the current and forecast data, and saves search history to localStorage to allow quick access to previously viewed cities.
 
 ## Usage
 
-[Write me a brief description section and usage section for the following code:
+This code generates a simple weather forecast web application.
 
-<insert code>]
+To use it:
 
-To use the random password generator:
+1. Enter a city name and preferred units.
+2. Click the Get Forecast button to view current conditions and a 5-day forecast.
+3. Click on the preferred city in the results section.
+4. Icons, temperatures, wind, and humidity data are shown for the searched city.
+5. Previously searched cities will be saved and can be clicked to quickly view forecasts again.
 
-1. Load the page containing the HTML input and buttons.
-2. Click the "Generate" button.
-3. When prompted, enter the desired password length (8-128 characters) and select the types of characters to include.
-4. A random password matching the selected criteria will be generated and populated into the password input field.
-5. If unhappy with the generated password, click the "Reroll" button to generate a new random password with the same criteria.
-6. The password can then be copied from the input field for use.
-
-Some usage notes:
-
-- The prompted criteria will be remembered between generations in the current session. Refreshing the page will reset them.
-- At least one character type must be selected when prompted.
-- The generator includes lowercase, uppercase, numbers, and special characters.
-- Clicking "Re-roll" will generate a new password matching the previous criteria, lenth and character types.
-
-So in summary, generate a custom password, re-roll it, and copy it!
+Additional weather data could be displayed by making further API calls.
 
 ## Screenshots
 
@@ -56,7 +42,7 @@ The following image demonstrates the web application's appearance and functional
 
 ## Deployment Link
 
-https://jmlouf.github.io/password-generator/
+https://jmlouf.github.io/sunny-side-up/
 
 ## Credits
 
@@ -66,9 +52,9 @@ The following resources were utilized:
 
 - KU Coding Bootcamp Spot - Provided project requirements and guidelines.
 - W3Schools - General reference for HTML, CSS and JavaScript.
-- Tech with Tim - YouTube channel with web development tutorials.
-- freeCodeCamp.org - Reference for JavaScript concepts and best practices.
-- https://owasp.org/www-community/password-special-characters – A list of password special characters.
+- MDN Web Docs - Referenced for CSS styling and JavaScript documentation.
+- Stack Overflow - Referenced for general JavaScript documentation.
+- GeeksForGeeks - Referenced for general JavaScript documentation.
 
 ## License
 
